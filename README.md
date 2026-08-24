@@ -2,6 +2,81 @@
 
 はじめてのハッカソン 2026 Summer作品のバックエンド
 
+## ローカル環境
+
+### 必要なソフトウェア
+
+- Docker
+- Docker Compose v2
+
+### 起動
+
+環境変数ファイルを作成し、`POSTGRES_PASSWORD`をローカル開発用の値に変更します。
+
+```bash
+cp .env.example .env
+```
+
+アプリケーションとPostgreSQLを起動します。
+
+```bash
+docker compose up --build
+```
+
+起動後、以下のURLでアプリケーションとDBの接続状態を確認できます。
+
+```text
+http://localhost:8080/health
+```
+
+正常時は次のレスポンスが返ります。
+
+```json
+{"status":"ok"}
+```
+
+バックグラウンドで起動する場合は、`-d`オプションを指定します。
+
+```bash
+docker compose up --build -d
+```
+
+### 停止
+
+```bash
+docker compose down
+```
+
+このコマンドはアプリとDBのコンテナ、およびComposeネットワークを削除します。DBのデータを保存するDocker Volumeは削除しないため、次回の起動時も同じデータを利用できます。
+
+### DBコンテナとVolume
+
+DBコンテナとVolumeは別々に管理されます。
+
+- DBコンテナはPostgreSQLを実行するための一時的な実行環境です
+- VolumeはテーブルやレコードなどのDBデータを保存する領域です
+- DBコンテナを削除・再作成しても、Volumeが残っていればDBデータは保持されます
+
+DBデータも削除して完全に初期化する場合のみ、次のコマンドを実行します。
+
+```bash
+docker compose down --volumes
+```
+
+このコマンドはアプリとDBのコンテナ、Composeネットワーク、PostgreSQLのVolumeを削除します。Dockerイメージは削除しません。次回の起動時に空のVolumeが作成され、`.env`の`POSTGRES_USER`、`POSTGRES_PASSWORD`、`POSTGRES_DB`を使用してPostgreSQLが初期化されます。
+
+Volumeを削除すると保存済みのDBデータは復元できないため、必要なデータがないことを確認してから実行してください。
+
+### 環境変数
+
+| 変数 | 説明 | デフォルト値 |
+| --- | --- | --- |
+| `APP_PORT` | ホスト側で公開するアプリのポート | `8080` |
+| `POSTGRES_PORT` | ホスト側で公開するPostgreSQLのポート | `5432` |
+| `POSTGRES_USER` | PostgreSQLのユーザー名 | `app` |
+| `POSTGRES_PASSWORD` | PostgreSQLのパスワード | なし（必須） |
+| `POSTGRES_DB` | PostgreSQLのデータベース名 | `app` |
+
 ## 開発ルール
 
 本プロジェクトでは、Issue駆動で開発を進めます。緊急対応などを除き、Issueが存在しない状態で開発を開始しないでください。
