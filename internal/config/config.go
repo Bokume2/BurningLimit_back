@@ -10,32 +10,35 @@ import (
 )
 
 type Config struct {
-	ServerPort       string
-	DatabaseHost     string
-	DatabasePort     string
-	DatabaseUser     string
-	DatabasePassword string
-	DatabaseName     string
-	DatabaseSSLMode  string
+	ServerPort        string
+	DatabaseHost      string
+	DatabasePort      string
+	DatabaseUser      string
+	DatabasePassword  string
+	DatabaseName      string
+	DatabaseSSLMode   string
+	FirebaseProjectID string
 }
 
 func Load() (Config, error) {
 	cfg := Config{
-		ServerPort:       valueOrDefault("PORT", "8080"),
-		DatabaseHost:     strings.TrimSpace(os.Getenv("DB_HOST")),
-		DatabasePort:     valueOrDefault("DB_PORT", "5432"),
-		DatabaseUser:     strings.TrimSpace(os.Getenv("DB_USER")),
-		DatabasePassword: os.Getenv("DB_PASSWORD"),
-		DatabaseName:     strings.TrimSpace(os.Getenv("DB_NAME")),
-		DatabaseSSLMode:  valueOrDefault("DB_SSLMODE", "disable"),
+		ServerPort:        valueOrDefault("PORT", "8080"),
+		DatabaseHost:      strings.TrimSpace(os.Getenv("DB_HOST")),
+		DatabasePort:      valueOrDefault("DB_PORT", "5432"),
+		DatabaseUser:      strings.TrimSpace(os.Getenv("DB_USER")),
+		DatabasePassword:  os.Getenv("DB_PASSWORD"),
+		DatabaseName:      strings.TrimSpace(os.Getenv("DB_NAME")),
+		DatabaseSSLMode:   valueOrDefault("DB_SSLMODE", "disable"),
+		FirebaseProjectID: strings.TrimSpace(os.Getenv("FIREBASE_PROJECT_ID")),
 	}
 
-	missing := make([]string, 0, 4)
+	missing := make([]string, 0, 5)
 	for name, value := range map[string]string{
-		"DB_HOST":     cfg.DatabaseHost,
-		"DB_USER":     cfg.DatabaseUser,
-		"DB_PASSWORD": cfg.DatabasePassword,
-		"DB_NAME":     cfg.DatabaseName,
+		"DB_HOST":             cfg.DatabaseHost,
+		"DB_USER":             cfg.DatabaseUser,
+		"DB_PASSWORD":         cfg.DatabasePassword,
+		"DB_NAME":             cfg.DatabaseName,
+		"FIREBASE_PROJECT_ID": cfg.FirebaseProjectID,
 	} {
 		if value == "" {
 			missing = append(missing, name)

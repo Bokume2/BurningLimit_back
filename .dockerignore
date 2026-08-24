@@ -7,3 +7,4 @@
 coverage.*
 Dockerfile
 compose.yml
+secrets/
