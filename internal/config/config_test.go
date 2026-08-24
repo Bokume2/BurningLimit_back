@@ -14,6 +14,7 @@ func TestLoad(t *testing.T) {
 	t.Setenv("DB_PASSWORD", "secret")
 	t.Setenv("DB_NAME", "app-db")
 	t.Setenv("DB_SSLMODE", "require")
+	t.Setenv("FIREBASE_PROJECT_ID", "test-project")
 
 	cfg, err := Load()
 	if err != nil {
@@ -29,6 +30,13 @@ func TestLoad(t *testing.T) {
 	if cfg.DatabaseSSLMode != "require" {
 		t.Errorf("DatabaseSSLMode = %q, want %q", cfg.DatabaseSSLMode, "require")
 	}
+	if cfg.FirebaseProjectID != "test-project" {
+		t.Errorf(
+			"FirebaseProjectID = %q, want %q",
+			cfg.FirebaseProjectID,
+			"test-project",
+		)
+	}
 }
 
 func TestLoadReportsMissingDatabaseSettings(t *testing.T) {
@@ -36,12 +44,13 @@ func TestLoadReportsMissingDatabaseSettings(t *testing.T) {
 	t.Setenv("DB_USER", "")
 	t.Setenv("DB_PASSWORD", "")
 	t.Setenv("DB_NAME", "")
+	t.Setenv("FIREBASE_PROJECT_ID", "")
 
 	_, err := Load()
 	if err == nil {
 		t.Fatal("Load() returned nil error, want missing environment variables error")
 	}
-	for _, name := range []string{"DB_HOST", "DB_USER", "DB_PASSWORD", "DB_NAME"} {
+	for _, name := range []string{"DB_HOST", "DB_USER", "DB_PASSWORD", "DB_NAME", "FIREBASE_PROJECT_ID"} {
 		if !strings.Contains(err.Error(), name) {
 			t.Errorf("Load() error = %q, want it to contain %q", err, name)
 		}
