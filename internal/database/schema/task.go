@@ -1,6 +1,8 @@
 package schema
 
 import (
+	"time"
+
 	"gorm.io/gorm"
 )
 
@@ -16,4 +18,5 @@ type Task struct {
 	Priority    string     `gorm:"type:enum('critical','high','middle','low');"`
 	Roles       []Role     `gorm:"many2many:role_tasks;"`
 	Schedule    []TaskSchedule
+	DeadLine    *time.Time
 }
