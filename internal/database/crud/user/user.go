@@ -13,16 +13,17 @@ var (
 	ErrEmailEmpty    = errors.New("empty email address")
 )
 
-func CreateUser(db *gorm.DB, ctx context.Context, username, email string) error {
+func CreateUser(db *gorm.DB, ctx context.Context, username, email string) (*schema.User, error) {
 	user := schema.User{
 		Username:    username,
 		Email:       email,
 		Displayname: username,
 	}
 	if err := validateUserData(&user); err != nil {
-		return err
+		return nil, err
 	}
-	return gorm.G[schema.User](db).Create(ctx, &user)
+	err := gorm.G[schema.User](db).Create(ctx, &user)
+	return &user, err
 }
 
 func GetUserByID(db *gorm.DB, ctx context.Context, id uint) (*schema.User, error) {
