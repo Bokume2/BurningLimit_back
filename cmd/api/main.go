@@ -10,8 +10,11 @@ import (
 	"syscall"
 	"time"
 
+	domainAuth "github.com/Bokume2/FirstHackathon2026Summer_back/internal/auth"
 	"github.com/Bokume2/FirstHackathon2026Summer_back/internal/config"
 	"github.com/Bokume2/FirstHackathon2026Summer_back/internal/database"
+	"github.com/Bokume2/FirstHackathon2026Summer_back/internal/firebaseauth"
+	"github.com/Bokume2/FirstHackathon2026Summer_back/internal/httpapi"
 	"github.com/labstack/echo/v5"
 )
 
@@ -40,7 +43,21 @@ func run() error {
 		}
 	}()
 
+	firebaseClient, err := firebaseauth.NewClient(connectCtx, cfg.FirebaseProjectID)
+	if err != nil {
+		return fmt.Errorf("initialize Firebase Auth: %w", err)
+	}
+	verifier, err := firebaseauth.NewVerifier(firebaseClient)
+	if err != nil {
+		return fmt.Errorf("initialize Firebase token verifier: %w", err)
+	}
+	authService, err := domainAuth.NewService(verifier)
+	if err != nil {
+		return fmt.Errorf("initialize authentication service: %w", err)
+	}
+
 	e := echo.New()
+	httpapi.RegisterAuthRoutes(e, authService)
 	e.GET("/health", func(c *echo.Context) error {
 		pingCtx, cancelPing := context.WithTimeout(c.Request().Context(), 2*time.Second)
 		defer cancelPing()
