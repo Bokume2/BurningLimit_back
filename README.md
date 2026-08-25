@@ -35,6 +35,19 @@ http://localhost:8080/health
 {"status":"ok"}
 ```
 
+Firebase Authenticationで取得したIDトークンを検証する場合は、次のエンドポイントを使用します。
+
+```http
+GET /auth/me
+Authorization: Bearer <Firebase ID token>
+```
+
+検証に成功すると、認証されたユーザーのUIDを返します。
+
+```json
+{"uid":"firebase-user-uid"}
+```
+
 バックグラウンドで起動する場合は、`-d`オプションを指定します。
 
 ```bash
@@ -76,6 +89,8 @@ Volumeを削除すると保存済みのDBデータは復元できないため、
 | `POSTGRES_USER` | PostgreSQLのユーザー名 | `app` |
 | `POSTGRES_PASSWORD` | PostgreSQLのパスワード | なし（必須） |
 | `POSTGRES_DB` | PostgreSQLのデータベース名 | `app` |
+| `FIREBASE_PROJECT_ID` | Firebase Project ID | なし（必須） |
+| `FIREBASE_CREDENTIAL_FILE` | FirebaseサービスアカウントJSONのパス | なし（必須） |
 
 ## 開発ルール
 
