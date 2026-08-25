@@ -9,12 +9,14 @@ import (
 )
 
 var (
+	ErrIDEmpty       = errors.New("empty id")
 	ErrUsernameEmpty = errors.New("empty user name")
 	ErrEmailEmpty    = errors.New("empty email address")
 )
 
-func CreateUser(db *gorm.DB, ctx context.Context, username, email string) (*schema.User, error) {
+func CreateUser(db *gorm.DB, ctx context.Context, id, username, email string) (*schema.User, error) {
 	user := schema.User{
+		ID:          id,
 		Username:    username,
 		Email:       email,
 		Displayname: username,
@@ -26,7 +28,7 @@ func CreateUser(db *gorm.DB, ctx context.Context, username, email string) (*sche
 	return &user, err
 }
 
-func GetUserByID(db *gorm.DB, ctx context.Context, id uint) (*schema.User, error) {
+func GetUserByID(db *gorm.DB, ctx context.Context, id string) (*schema.User, error) {
 	user, err := gorm.G[schema.User](db).Where("id = ?", id).First(ctx)
 	return &user, err
 }
@@ -48,12 +50,15 @@ func UpdateUser(db *gorm.DB, ctx context.Context, user *schema.User) error {
 	return err
 }
 
-func DeleteUser(db *gorm.DB, ctx context.Context, id uint) error {
+func DeleteUser(db *gorm.DB, ctx context.Context, id string) error {
 	_, err := gorm.G[schema.User](db).Where("id = ?", id).Delete(ctx)
 	return err
 }
 
 func validateUserData(user *schema.User) error {
+	if user.ID == "" {
+		return ErrIDEmpty
+	}
 	if user.Username == "" {
 		return ErrUsernameEmpty
 	}
