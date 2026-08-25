@@ -9,4 +9,5 @@ type Group struct {
 	Description string
 	Roles       []Role
 	Tasks       []Task
+	TaskTags    []TaskTag
 }

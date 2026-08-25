@@ -4,8 +4,8 @@ import "gorm.io/gorm"
 
 type User struct {
 	gorm.Model
-	Username    string
-	Email       string
+	Username    string `gorm:"uniqueIndex,check:username != ''"`
+	Email       string `gorm:"uniqueIndex,check:email != ''"`
 	Displayname string
 	Description string
 	Groups      []*Group `gorm:"many2many:user_groups;"`
